@@ -1,11 +1,12 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
-
+// use std::borrow::Borrow;
 use rocket::http::RawStr;
 use serde::{ Serialize, Deserialize };
 use rocket_contrib::json::Json;
 use rand::Rng;
 use rocket::State;
+// use std::sync::{Arc, Mutex};
 
 #[get("/")]
 fn index() -> &'static str {
@@ -40,9 +41,10 @@ fn put_kvs(key: &RawStr, kvs:Json<Kvs>, state: State<AppState>) -> Json<PutResul
 
 #[get("/kvs/<key>")]
 fn get_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
-    println!("view:{:?}", state.view);
+    state.print_view();
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/kvs/keys/{}", state.choose_address(key), key);
+    println!("url:{}", url);
     let response:Kvs = client.get(&url[..])
         .send().unwrap()
         .json().unwrap();
@@ -62,7 +64,7 @@ fn get_key_count(state: State<AppState>) -> Json<Kvs> {
 
 #[get("/kvs/shards")]
 fn get_shards(state: State<AppState>) -> Json<Kvs> {
-    println!("view:{:?}", state.view);
+    state.print_view();
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/shards", state.random_address());
     let response:Kvs = client.get(&url[..])
@@ -83,68 +85,79 @@ fn delete_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
 }
 
 #[derive(Copy, Clone)]
-pub struct AppState<'a> {
+struct AppState {
     pub repl_factor:u8,
-    pub view: &'a str
+    pub view:[IPAddress; 8],
+    pub length:usize
 }
 
-impl Default for AppState<'static> {
+#[derive(Copy, Clone, Default)]
+struct IPAddress {
+    pub ip:[u8;4],
+    pub port:u32,
+}
+
+impl IPAddress {
+    fn to_string(self) -> String{
+        return format!("{}.{}.{}.{}:{}", self.ip[0], self.ip[1], self.ip[2], self.ip[3], self.port);
+    }
+}
+
+fn build_ip(address:String) -> IPAddress {
+    let split = address.split(":").collect::<Vec<&str>>();
+    let ip_str = split[0];
+    let port_str = split[1];
+    let mut ip_address = IPAddress::default();
+    for (i, v) in ip_str.split(".").enumerate() {
+        ip_address.ip[i] = v.parse::<u8>().unwrap();
+    }
+    ip_address.port = port_str.parse::<u32>().unwrap();
+    return ip_address;   
+}
+
+impl Default for AppState {
     fn default() -> Self {
-        let view_str = std::env::var("VIEW").unwrap();
-        // let view_iter = view_str.split(",");
-        // let mut view:Vec<String> = Vec::new();
-        // for vstr in view_iter {
-        //     view.push(vstr.to_string());
-        // }
-        return AppState<'static> {
+        let mut envior = std::env::var("VIEW").unwrap();
+        let view_iter = envior.split(",");
+        let mut view = [IPAddress::default(); 8];
+        let mut length:usize = 0;
+        for (i,address) in view_iter.enumerate() {
+            view[i] = build_ip(address.to_string());
+            length += 1;
+        }
+        return AppState {
             repl_factor: std::env::var("REPL_FACTOR").unwrap()
                             .parse::<u8>().unwrap(),
-            view: &view_str[..]
+            view: view,
+            length:length
         };
     }
 }
 
-impl AppState<'static> {
-    fn get_view(self) -> Vec<String> {
-        let view_iter = self.view.to_string().split(",");
-        let mut view:Vec<String> = Vec::new();
-        for vstr in view_iter {
-            view.push(vstr.to_string());
-        }
-        return view;
-    }
-
+impl AppState {
     fn choose_address(self, _key:&RawStr) -> String {
         let mut rng = rand::thread_rng();
-        let view = self.get_view();
-        let i:usize = rng.gen_range(0..view.len());
-        return format!("http://localhost:{}", view[i])
+        let i:usize = rng.gen_range(0..self.length);
+        return format!("http://localhost:{}", self.view[i].port)
+    }
+
+    fn print_view(self) {
+        for i in 0..self.length {
+            println!("{}", format!("http://localhost:{}", self.view[i].port))
+        }
     }
 
     fn random_address(self) -> String {
         let mut rng = rand::thread_rng();
-        let view = self.get_view();
-        let i:usize = rng.gen_range(0..view.len());
-        return format!("http://localhost:{}", view[i])
+        let i:usize = rng.gen_range(0..self.length);
+        return format!("http://localhost:{}", self.view[i].port);
     }
 }
-
-// fn choose_address(self, _key:&RawStr) -> String {
-//     let mut rng = rand::thread_rng();
-//     let i:usize = rng.gen_range(0..self.view.len());
-//     return format!("http://localhost:{}", self.view[i])
-// }
-
-// fn random_address(view:) -> String {
-//     let mut rng = rand::thread_rng();
-//     let i:usize = rng.gen_range(0..self.view.len());
-//     return format!("http://localhost:{}", self.view[i])
-// }
 
 fn main() {
     let app_state = AppState::default();
     rocket::ignite()
         .manage(app_state)
-        .mount("/", routes![index, put_kvs, get_kvs, get_key_count, get_shards])
+        .mount("/", routes![index, put_kvs, get_kvs])//get_key_count, get_shards
         .launch();
 }
