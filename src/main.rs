@@ -1,12 +1,17 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
+extern crate crypto;
 // use std::borrow::Borrow;
 use rocket::http::RawStr;
 use serde::{ Serialize, Deserialize };
 use rocket_contrib::json::Json;
 use rand::Rng;
 use rocket::State;
+use sha1::{Sha1, Digest};
 // use std::sync::{Arc, Mutex};
+// use crypto::sha1::Sha1;
+use std::convert::TryInto;
+
 
 #[get("/")]
 fn index() -> &'static str {
@@ -88,13 +93,21 @@ fn delete_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
 struct AppState {
     pub repl_factor:u8,
     pub view:[IPAddress; 8],
-    pub length:usize
+    pub length:usize,
+    pub ring:[VirtualNode; 512]
 }
 
 #[derive(Copy, Clone, Default)]
 struct IPAddress {
     pub ip:[u8;4],
     pub port:u32,
+}
+
+
+#[derive(Copy, Clone, Default)]
+struct VirtualNode {
+    pub hash:[u8; 20],
+    pub id:u8
 }
 
 impl IPAddress {
@@ -121,15 +134,29 @@ impl Default for AppState {
         let view_iter = envior.split(",");
         let mut view = [IPAddress::default(); 8];
         let mut length:usize = 0;
+        let mut ring = [VirtualNode::default(); 512];
         for (i,address) in view_iter.enumerate() {
             view[i] = build_ip(address.to_string());
             length += 1;
+            let mut hasher = Sha1::new();
+            let mut index = i*64;
+            hasher.update(address.to_string());
+            let mut result = hasher.finalize();
+            for j in 1..64 {
+                let mut hasher1 = Sha1::new();
+                index += 1;
+                hasher1.update(result);
+                result = hasher1.finalize();
+                let x: [u8; 20] = result.as_slice().try_into().expect("Wrong length");
+                ring[index] = VirtualNode{hash:x, id:i as u8};
+            }
         }
         return AppState {
             repl_factor: std::env::var("REPL_FACTOR").unwrap()
                             .parse::<u8>().unwrap(),
             view: view,
-            length:length
+            length:length,
+            ring:ring
         };
     }
 }
@@ -158,6 +185,6 @@ fn main() {
     let app_state = AppState::default();
     rocket::ignite()
         .manage(app_state)
-        .mount("/", routes![index, put_kvs, get_kvs])//get_key_count, get_shards
+        .mount("/", routes![index, put_kvs, get_kvs, get_key_count, get_shards])
         .launch();
 }
