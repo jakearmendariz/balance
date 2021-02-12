@@ -59,8 +59,8 @@ impl AppState {
         let mut ip_address = IPAddress::default();
         for (j, v) in split[0].split(".").enumerate() {
             ip_address.ip[j] = v.parse::<u8>().unwrap();
-            self.length += 1;
         }
+        self.length += 1;
         ip_address.port = split[1].parse::<u32>().unwrap();
         self.view[i] = ip_address;   
     }
