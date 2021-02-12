@@ -1,3 +1,3 @@
 import requests
 
-requests.put('http://localhost:8000/kvs/yoloswag', json={'value':'sawg'})
+requests.put('http://localhost:8000/kvs/jake', json={'value':'sawg'})

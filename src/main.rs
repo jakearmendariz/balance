@@ -1,17 +1,12 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
 extern crate crypto;
-// use std::borrow::Borrow;
 use rocket::http::RawStr;
 use serde::{ Serialize, Deserialize };
 use rocket_contrib::json::Json;
-use rand::Rng;
 use rocket::State;
-use sha1::{Sha1, Digest};
-// use std::sync::{Arc, Mutex};
-// use crypto::sha1::Sha1;
-use std::convert::TryInto;
-
+mod app_state;
+use app_state::AppState;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -87,98 +82,6 @@ fn delete_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
         .json().unwrap();
     println!("response: {:?}", response);
     Json(response)
-}
-
-#[derive(Copy, Clone)]
-struct AppState {
-    pub repl_factor:u8,
-    pub view:[IPAddress; 8],
-    pub length:usize,
-    pub ring:[VirtualNode; 512]
-}
-
-#[derive(Copy, Clone, Default)]
-struct IPAddress {
-    pub ip:[u8;4],
-    pub port:u32,
-}
-
-
-#[derive(Copy, Clone, Default)]
-struct VirtualNode {
-    pub hash:[u8; 20],
-    pub id:u8
-}
-
-impl IPAddress {
-    fn to_string(self) -> String{
-        return format!("{}.{}.{}.{}:{}", self.ip[0], self.ip[1], self.ip[2], self.ip[3], self.port);
-    }
-}
-
-fn build_ip(address:String) -> IPAddress {
-    let split = address.split(":").collect::<Vec<&str>>();
-    let ip_str = split[0];
-    let port_str = split[1];
-    let mut ip_address = IPAddress::default();
-    for (i, v) in ip_str.split(".").enumerate() {
-        ip_address.ip[i] = v.parse::<u8>().unwrap();
-    }
-    ip_address.port = port_str.parse::<u32>().unwrap();
-    return ip_address;   
-}
-
-impl Default for AppState {
-    fn default() -> Self {
-        let mut envior = std::env::var("VIEW").unwrap();
-        let view_iter = envior.split(",");
-        let mut view = [IPAddress::default(); 8];
-        let mut length:usize = 0;
-        let mut ring = [VirtualNode::default(); 512];
-        for (i,address) in view_iter.enumerate() {
-            view[i] = build_ip(address.to_string());
-            length += 1;
-            let mut hasher = Sha1::new();
-            let mut index = i*64;
-            hasher.update(address.to_string());
-            let mut result = hasher.finalize();
-            for j in 1..64 {
-                let mut hasher1 = Sha1::new();
-                index += 1;
-                hasher1.update(result);
-                result = hasher1.finalize();
-                let x: [u8; 20] = result.as_slice().try_into().expect("Wrong length");
-                ring[index] = VirtualNode{hash:x, id:i as u8};
-            }
-        }
-        return AppState {
-            repl_factor: std::env::var("REPL_FACTOR").unwrap()
-                            .parse::<u8>().unwrap(),
-            view: view,
-            length:length,
-            ring:ring
-        };
-    }
-}
-
-impl AppState {
-    fn choose_address(self, _key:&RawStr) -> String {
-        let mut rng = rand::thread_rng();
-        let i:usize = rng.gen_range(0..self.length);
-        return format!("http://localhost:{}", self.view[i].port)
-    }
-
-    fn print_view(self) {
-        for i in 0..self.length {
-            println!("{}", format!("http://localhost:{}", self.view[i].port))
-        }
-    }
-
-    fn random_address(self) -> String {
-        let mut rng = rand::thread_rng();
-        let i:usize = rng.gen_range(0..self.length);
-        return format!("http://localhost:{}", self.view[i].port);
-    }
 }
 
 fn main() {
