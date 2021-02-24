@@ -5,12 +5,10 @@ use rand::Rng;
 use sha1::{Sha1, Digest};
 use std::convert::TryInto;
 use std::sync::Mutex;
-use std::sync::Arc;
 
-
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct SharedState {
-    state: Arc<Mutex<AppState>>
+    pub state: Mutex<AppState>
 }
 
 #[derive(Copy, Clone)]

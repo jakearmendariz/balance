@@ -6,9 +6,9 @@ mod routes;
 
 
 fn main() {
-    let app_state = app_state::AppState::default();
+    let app_state = app_state::SharedState::default();
     rocket::ignite()
         .manage(app_state)
-        .mount("/", routes![routes::index, routes::put_kvs, routes::get_kvs, routes::delete_kvs, routes::get_key_count, routes::get_shards])
+        .mount("/", routes![routes::index, routes::put_kvs, routes::get_kvs, routes::delete_kvs, routes::get_key_count, routes::get_shards, routes::view_change])
         .launch();
 }

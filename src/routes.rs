@@ -3,7 +3,6 @@ use rocket::http::RawStr;
 use serde::{ Serialize, Deserialize };
 use rocket_contrib::json::Json;
 use rocket::State;
-use crate::app_state::AppState;
 use crate::app_state::SharedState;
 
 use std::borrow::BorrowMut;
@@ -36,31 +35,33 @@ pub struct ViewChangeResult {
     shards: u8
 }
 
-// #[put("/kvs/view-change", data = "<view_change>")]
-// pub fn view_change(view_change:Json<ViewChange>, app_state: State<AppState>) -> Json<ViewChangeResult> {
-//     app_state.repl_factor = view_change.repl_factor;
-//     let view_iter = view_change.view.split(",");
-//     app_state.length = 0;
-//     for (i,address) in view_iter.enumerate() {
-//         app_state.borrow_mut().build_ip(address.to_string(), i);
-//         let ip_address = app_state.view[i];
-//         app_state.build_ring(ip_address.to_string(), i);
-//     }
-//     app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
-//     let url = format!("{}/kvs/keys/view-change", app_state.random_address());
-//     let client = reqwest::blocking::Client::new();
-//     let response = client.put(&url[..])
-//         .json(&serde_json::json!({
-//             "view":view_change.view,
-//             "repl-factor":view_change.repl_factor
-//         }))
-//         .send().unwrap()
-//         .json().unwrap();
-//     Json(response)
-// }
+#[put("/kvs/view-change", data = "<view_change>")]
+pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState>) -> Json<ViewChangeResult> {
+    let mut app_state = shared_state.state.lock().expect("lock shared data");
+    app_state.repl_factor = view_change.repl_factor;
+    let view_iter = view_change.view.split(",");
+    app_state.length = 0;
+    for (i,address) in view_iter.enumerate() {
+        app_state.borrow_mut().build_ip(address.to_string(), i);
+        let ip_address = app_state.view[i];
+        app_state.build_ring(ip_address.to_string(), i);
+    }
+    app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
+    let url = format!("{}/kvs/keys/view-change", app_state.random_address());
+    let client = reqwest::blocking::Client::new();
+    let response = client.put(&url[..])
+        .json(&serde_json::json!({
+            "view":view_change.view,
+            "repl-factor":view_change.repl_factor
+        }))
+        .send().unwrap()
+        .json().unwrap();
+    Json(response)
+}
 
 #[put("/kvs/<key>", data = "<kvs>")]
-pub fn put_kvs(key: &RawStr, kvs:Json<Kvs>, state: State<AppState>) -> Json<PutResult> {
+pub fn put_kvs(key: &RawStr, kvs:Json<Kvs>, shared_state: State<SharedState>) -> Json<PutResult> {
+    let state = shared_state.state.lock().expect("lock shared data");
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/kvs/keys/{}", state.choose_address(key), key);
     println!("request: {}:{} to {}", key, kvs.value, url);
@@ -75,7 +76,8 @@ pub fn put_kvs(key: &RawStr, kvs:Json<Kvs>, state: State<AppState>) -> Json<PutR
 }
 
 #[get("/kvs/<key>")]
-pub fn get_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
+pub fn get_kvs(key: &RawStr, shared_state: State<SharedState>) -> Json<Kvs> {
+    let state = shared_state.state.lock().expect("lock shared data");
     state.print_view();
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/kvs/keys/{}", state.choose_address(key), key);
@@ -88,7 +90,8 @@ pub fn get_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
 }
 
 #[get("/kvs/key-count")]
-pub fn get_key_count(state: State<AppState>) -> Json<Kvs> {
+pub fn get_key_count(shared_state: State<SharedState>) -> Json<Kvs> {
+    let state = shared_state.state.lock().expect("lock shared data");
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/key_count", state.random_address());
     let response:Kvs = client.get(&url[..])
@@ -98,7 +101,8 @@ pub fn get_key_count(state: State<AppState>) -> Json<Kvs> {
 }
 
 #[get("/kvs/shards")]
-pub fn get_shards(state: State<AppState>) -> Json<Kvs> {
+pub fn get_shards(shared_state: State<SharedState>) -> Json<Kvs> {
+    let state = shared_state.state.lock().expect("lock shared data");
     state.print_view();
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/shards", state.random_address());
@@ -109,7 +113,8 @@ pub fn get_shards(state: State<AppState>) -> Json<Kvs> {
 }
 
 #[delete("/kvs/<key>")]
-pub fn delete_kvs(key: &RawStr, state: State<AppState>) -> Json<Kvs> {
+pub fn delete_kvs(key: &RawStr, shared_state: State<SharedState>) -> Json<Kvs> {
+    let state = shared_state.state.lock().expect("lock shared data");
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/kvs/keys/{}", state.choose_address(key), key);
     let response:Kvs = client.delete(&url[..])
