@@ -36,28 +36,28 @@ pub struct ViewChangeResult {
     shards: u8
 }
 
-#[put("/kvs/view-change", data = "<view_change>")]
-pub fn view_change(view_change:Json<ViewChange>, app_state: State<AppState>) -> Json<ViewChangeResult> {
-    app_state.repl_factor = view_change.repl_factor;
-    let view_iter = view_change.view.split(",");
-    app_state.length = 0;
-    for (i,address) in view_iter.enumerate() {
-        app_state.borrow_mut().build_ip(address.to_string(), i);
-        let ip_address = app_state.view[i];
-        app_state.build_ring(ip_address.to_string(), i);
-    }
-    app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
-    let url = format!("{}/kvs/keys/view-change", app_state.random_address());
-    let client = reqwest::blocking::Client::new();
-    let response = client.put(&url[..])
-        .json(&serde_json::json!({
-            "view":view_change.view,
-            "repl-factor":view_change.repl_factor
-        }))
-        .send().unwrap()
-        .json().unwrap();
-    Json(response)
-}
+// #[put("/kvs/view-change", data = "<view_change>")]
+// pub fn view_change(view_change:Json<ViewChange>, app_state: State<AppState>) -> Json<ViewChangeResult> {
+//     app_state.repl_factor = view_change.repl_factor;
+//     let view_iter = view_change.view.split(",");
+//     app_state.length = 0;
+//     for (i,address) in view_iter.enumerate() {
+//         app_state.borrow_mut().build_ip(address.to_string(), i);
+//         let ip_address = app_state.view[i];
+//         app_state.build_ring(ip_address.to_string(), i);
+//     }
+//     app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
+//     let url = format!("{}/kvs/keys/view-change", app_state.random_address());
+//     let client = reqwest::blocking::Client::new();
+//     let response = client.put(&url[..])
+//         .json(&serde_json::json!({
+//             "view":view_change.view,
+//             "repl-factor":view_change.repl_factor
+//         }))
+//         .send().unwrap()
+//         .json().unwrap();
+//     Json(response)
+// }
 
 #[put("/kvs/<key>", data = "<kvs>")]
 pub fn put_kvs(key: &RawStr, kvs:Json<Kvs>, state: State<AppState>) -> Json<PutResult> {

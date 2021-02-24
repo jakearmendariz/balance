@@ -8,7 +8,7 @@ use std::sync::Mutex;
 use std::sync::Arc;
 
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct SharedState {
     state: Arc<Mutex<AppState>>
 }
