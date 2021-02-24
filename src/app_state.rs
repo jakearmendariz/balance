@@ -4,6 +4,14 @@ use rocket::http::RawStr;
 use rand::Rng;
 use sha1::{Sha1, Digest};
 use std::convert::TryInto;
+use std::sync::Mutex;
+use std::sync::Arc;
+
+
+#[derive(Clone)]
+pub struct SharedState {
+    state: Arc<Mutex<AppState>>
+}
 
 #[derive(Copy, Clone)]
 pub struct AppState {
@@ -26,7 +34,7 @@ pub struct VirtualNode {
 }
 
 impl IPAddress {
-    fn to_string(self) -> String{
+    pub fn to_string(self) -> String{
         return format!("{}.{}.{}.{}:{}", self.ip[0], self.ip[1], self.ip[2], self.ip[3], self.port);
     }
 }
