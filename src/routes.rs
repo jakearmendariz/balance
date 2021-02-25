@@ -32,10 +32,10 @@ pub struct ViewChange {
 #[derive(Deserialize, Debug, Serialize)]
 pub struct ViewChangeResult {
     message: String,
-    shards: u8
+    shards: Vec<String>
 }
 
-#[put("/kvs/view-change", data = "<view_change>")]
+#[put("/kvs/keys/view-change", data = "<view_change>")]
 pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState>) -> Json<ViewChangeResult> {
     let mut app_state = shared_state.state.lock().expect("lock shared data");
     app_state.repl_factor = view_change.repl_factor;
@@ -47,7 +47,8 @@ pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState
         app_state.build_ring(ip_address.to_string(), i);
     }
     app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
-    let url = format!("{}/kvs/keys/view-change", app_state.random_address());
+    let url = format!("{}/kvs/view-change", app_state.random_address());
+    println!("url:{}", url);
     let client = reqwest::blocking::Client::new();
     let response = client.put(&url[..])
         .json(&serde_json::json!({
@@ -56,6 +57,7 @@ pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState
         }))
         .send().unwrap()
         .json().unwrap();
+    println!("response:{:?}", response);
     Json(response)
 }
 
