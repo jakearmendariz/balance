@@ -5,7 +5,7 @@ mod app_state;
 mod routes;
 
 
-fn main() {
+fn main() { 
     let app_state = app_state::SharedState::default();
     rocket::ignite()
         .manage(app_state)
