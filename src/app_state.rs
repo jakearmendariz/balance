@@ -5,6 +5,9 @@ use rand::Rng;
 use std::convert::TryInto;
 use std::sync::Mutex;
 use openssl::sha::sha1;
+use std::fmt;
+use serde::{ Serialize, Deserialize };
+
 #[derive(Default)]
 pub struct SharedState {
     pub state: Mutex<AppState>
@@ -34,6 +37,46 @@ impl IPAddress {
     pub fn to_string(self) -> String{
         return format!("{}.{}.{}.{}:{}", self.ip[0], self.ip[1], self.ip[2], self.ip[3], self.port);
     }
+}
+
+
+// #[derive(Deserialize, Debug, Serialize, Responder)]
+// pub enum KvsError {
+//   #[response(status = 400, content_type = "json")]
+//   AddressMapping(String),
+//   #[response(status = 500, content_type = "json")]
+//   ForwardingError(String),
+//   #[response(status = 500, content_type = "json")]
+//   JsonDecodingError(String)
+// }
+
+// impl std::error::Error for KvsError {}
+
+// impl fmt::Display for KvsError {
+//   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//     match self {
+//         KvsError::AddressMapping(_) => write!(f, ADDRESS_MAPPING_ERROR),
+//         KvsError::ForwardingError(_) => write!(f, FORWARDING_ERROR),
+//         KvsError::JsonDecodingError(_) => write!(f, JSON_DECODING_ERROR),
+//     }
+//   }
+// }
+
+pub const ADDRESS_MAPPING_ERROR:&str = "Error occured while finding an address maping";
+pub const FORWARDING_ERROR:&str = "Error occured forwarding request";
+pub const JSON_DECODING_ERROR:&str = "Error occured while decoding json";
+
+
+#[derive(Deserialize, Debug, Serialize, Responder)]
+#[response(status = 500, content_type = "json")]
+pub struct KvsError(pub String);
+
+impl std::error::Error for KvsError {}
+
+impl fmt::Display for KvsError {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "message: {}", self.0)
+  }
 }
 
 impl Default for AppState {
@@ -82,7 +125,12 @@ impl AppState {
 
     pub fn build_ring(&mut self, address:String, i:usize) {
         let mut index = i*64;
-        let mut hashed_address:[u8; 20] = address.as_bytes().try_into().expect("Wrong length");
+        // Copies the address into bytes, and then into the hashed_address array
+        let byte_address = address.as_bytes();
+        let mut hashed_address:[u8; 20] = [0; 20];
+        for j in 0..(byte_address.len()) {
+            hashed_address[j] = byte_address[j]
+        }
         for _ in 0..64 {
             hashed_address = sha1(&hashed_address).try_into().expect("Wrong length");
             self.ring[index] = VirtualNode{
@@ -93,9 +141,9 @@ impl AppState {
         }
     }
 
-    pub fn choose_address(self, key:&RawStr) -> String {
-        let i:usize = self.search_ring(key) as usize;
-        return format!("http://{}", self.view[i].to_string());
+    pub fn choose_address(self, key:&RawStr) -> Result<String, KvsError> {
+        let i:usize = self.search_ring(key)? as usize;
+        return Ok(format!("http://{}", self.view[i].to_string()));
     }
 
     pub fn print_view(self) {
@@ -110,17 +158,17 @@ impl AppState {
         self.view[i].to_string()
     }
 
-    pub fn search_ring(self, key:&RawStr) -> u8 {
+    pub fn search_ring(self, key:&RawStr) -> Result<u8, KvsError> {
         let mut l:usize = 512 - self.length*64;
         let mut r:usize = 512;
         let key_hash: [u8; 20] = sha1(&key.as_bytes()).try_into().expect("Wrong length");
         if self.ring[0].hash >=  key_hash && self.ring[r-1].hash >= key_hash {
-            return self.ring[0].id;
+            return Ok(self.ring[0].id);
         }
         while l < r {
             let mid = (l + r)/2;
             if self.ring[mid].hash <=  key_hash && self.ring[mid+1].hash >= key_hash {
-                return self.ring[mid].id;
+                return Ok(self.ring[mid].id);
             }else if self.ring[mid].hash >= key_hash{
                 r = mid;
             } else {
@@ -128,6 +176,6 @@ impl AppState {
             }
         }
         eprintln!("Error: could not find address for key l:{}, r:{}", l, r);
-        1_u8
+        Err(KvsError(ADDRESS_MAPPING_ERROR.to_string()))
     }
 }
