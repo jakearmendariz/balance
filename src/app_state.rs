@@ -7,7 +7,6 @@ use std::sync::Mutex;
 use openssl::sha::sha1;
 use std::fmt;
 use serde::{ Serialize, Deserialize };
-use openssl::symm::{encrypt, Cipher};
 use openssl::rsa::{Rsa, Padding};
 extern crate base64;
 use base64::{encode, decode};
@@ -146,7 +145,7 @@ impl AppState {
     pub fn random_address(self) -> String {
         let mut rng = rand::thread_rng();
         let i:usize = rng.gen_range(0..self.length);
-        self.view[i].to_string()
+        format!("http://{}", self.view[i].to_string())
     }
 
     pub fn search_ring(self, key:&RawStr) -> Result<u8, KvsError> {

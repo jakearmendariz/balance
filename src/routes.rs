@@ -105,6 +105,7 @@ pub fn get_kvs(key: &RawStr, shared_state: State<SharedState>) -> Result<Json<Ge
     let state = shared_state.state.lock().expect("lock shared data");
     let client = reqwest::blocking::Client::new();
     let url = format!("{}/kvs/keys/{}", state.choose_address(key)?, key);
+    println!("url: {}", url);
     let response = match client.get(&url[..]).send() {
         Ok(response) => {
             if response.status().is_success() {
@@ -139,11 +140,15 @@ pub fn get_kvs(key: &RawStr, shared_state: State<SharedState>) -> Result<Json<Ge
 pub fn get_key_count(shared_state: State<SharedState>) -> Result<Json<KeyCount>, KvsError> {
     let state = shared_state.state.lock().expect("lock shared data");
     let client = reqwest::blocking::Client::new();
-    let url = format!("{}/key_count", state.random_address());
+    let url = format!("{}/kvs/key-count", state.random_address());
+    println!("url: {}", url);
     let response = match client.get(&url[..])
         .send() {
             Ok(response) => Ok(Json(response.json().unwrap())),
-            Err(_) => Err(KvsError(FORWARDING_ERROR.to_string()))
+            Err(e) => {
+                println!("error:{}", e);
+                Err(KvsError(FORWARDING_ERROR.to_string()))
+            }
         };
     response
 }
@@ -152,7 +157,7 @@ pub fn get_key_count(shared_state: State<SharedState>) -> Result<Json<KeyCount>,
 pub fn get_shards(shared_state: State<SharedState>) -> Result<Json<KeyCount>, KvsError> {
     let state = shared_state.state.lock().expect("lock shared data");
     let client = reqwest::blocking::Client::new();
-    let url = format!("{}/shards", state.random_address());
+    let url = format!("{}/kvs/shards", state.random_address());
     let response = match client.get(&url[..])
     .send() {
         Ok(response) => Ok(Json(response.json().unwrap())),
