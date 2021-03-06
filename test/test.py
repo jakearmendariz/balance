@@ -20,7 +20,7 @@ class load_balancer(unittest.TestCase):
         print(response.json())
 
     def test_put(self):
-        response = requests.put(f'{url}/kvs/keys/key', json={'value':'value'})
+        response = requests.put(f'{url}/kvs/keys/ass', json={'value':'hole'})
         print(response.status_code)
         self.assertIn(response.status_code, (200, 201))
         print(response.json())

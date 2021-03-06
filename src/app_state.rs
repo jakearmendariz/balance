@@ -7,6 +7,20 @@ use std::sync::Mutex;
 use openssl::sha::sha1;
 use std::fmt;
 use serde::{ Serialize, Deserialize };
+use openssl::symm::{encrypt, Cipher};
+use openssl::rsa::{Rsa, Padding};
+extern crate base64;
+use base64::{encode, decode};
+extern crate lazy_static;
+
+lazy_static::lazy_static! {
+    static ref PRIVATE_KEY:String = std::fs::read_to_string("private.key")
+        .expect("Couldn't read private.key");
+}
+lazy_static::lazy_static! {
+    static ref PUBLIC_KEY:String = std::fs::read_to_string("public.key")
+        .expect("Couldn't read public.key");
+}
 
 #[derive(Default)]
 pub struct SharedState {
@@ -39,29 +53,6 @@ impl IPAddress {
     }
 }
 
-
-// #[derive(Deserialize, Debug, Serialize, Responder)]
-// pub enum KvsError {
-//   #[response(status = 400, content_type = "json")]
-//   AddressMapping(String),
-//   #[response(status = 500, content_type = "json")]
-//   ForwardingError(String),
-//   #[response(status = 500, content_type = "json")]
-//   JsonDecodingError(String)
-// }
-
-// impl std::error::Error for KvsError {}
-
-// impl fmt::Display for KvsError {
-//   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//     match self {
-//         KvsError::AddressMapping(_) => write!(f, ADDRESS_MAPPING_ERROR),
-//         KvsError::ForwardingError(_) => write!(f, FORWARDING_ERROR),
-//         KvsError::JsonDecodingError(_) => write!(f, JSON_DECODING_ERROR),
-//     }
-//   }
-// }
-
 pub const ADDRESS_MAPPING_ERROR:&str = "Error occured while finding an address maping";
 pub const FORWARDING_ERROR:&str = "Error occured forwarding request";
 pub const JSON_DECODING_ERROR:&str = "Error occured while decoding json";
@@ -88,7 +79,7 @@ impl Default for AppState {
             repl_factor: repl_factor,
             view: [IPAddress::default(); 8],
             length:0,
-            ring:[VirtualNode::default(); 512]
+            ring:[VirtualNode::default(); 512],
         };
         let view_iter = view_env.split(',');
         for (i,address) in view_iter.enumerate() {
@@ -146,7 +137,7 @@ impl AppState {
         return Ok(format!("http://{}", self.view[i].to_string()));
     }
 
-    pub fn print_view(self) {
+    pub fn _print_view(self) {
         for i in 0..self.length {
             println!("http://{}", self.view[i].to_string());
         }
@@ -177,5 +168,25 @@ impl AppState {
         }
         eprintln!("Error: could not find address for key l:{}, r:{}", l, r);
         Err(KvsError(ADDRESS_MAPPING_ERROR.to_string()))
+    }
+
+    pub fn encrypt(self, data:String) -> String {
+        // Encrypt with public key
+        let rsa = Rsa::public_key_from_pem(PUBLIC_KEY.as_bytes()).unwrap();
+        let mut buf: Vec<u8> = vec![0; rsa.size() as usize];
+        let _ = rsa.public_encrypt(data.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
+        encode(&buf)
+    }
+
+    pub fn decrypt(self, data:String) -> String {
+        let passphrase = std::env::var("PASSPHRASE").unwrap();
+        // Decrypt with private key
+        let hash = decode(data).unwrap();
+        let rsa = Rsa::private_key_from_pem_passphrase(PRIVATE_KEY.as_bytes(), passphrase.as_bytes()).unwrap();
+        let mut buf: Vec<u8> = vec![0; rsa.size() as usize];
+        let _ = rsa.private_decrypt(&hash, &mut buf, Padding::PKCS1).unwrap();
+
+        let decrypted_str = String::from_utf8(buf).unwrap();
+        decrypted_str.chars().filter(|c| c.is_alphanumeric()).collect::<String>()
     }
 }

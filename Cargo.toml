@@ -17,3 +17,5 @@ rand = "0.8.3"
 rust-crypto = "^0.2"
 sha-1 = "0.9.3"
 openssl = { version = "0.10", features = ["vendored"] }
+base64 = "0.13.0"
+lazy_static = "1.4.0"
