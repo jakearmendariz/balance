@@ -1,4 +1,3 @@
-
 extern crate crypto;
 use rocket::http::RawStr;
 use rand::Rng;
