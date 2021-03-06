@@ -3,7 +3,7 @@ extern crate crypto;
 use rocket::http::RawStr;
 use rand::Rng;
 use std::convert::TryInto;
-use std::sync::Mutex;
+use std::sync::RwLock;
 use openssl::sha::sha1;
 use std::fmt;
 use serde::{ Serialize, Deserialize };
@@ -23,7 +23,7 @@ lazy_static::lazy_static! {
 
 #[derive(Default)]
 pub struct SharedState {
-    pub state: Mutex<AppState>
+    pub state: RwLock<AppState>
 }
 
 #[derive(Debug, Copy, Clone)]
