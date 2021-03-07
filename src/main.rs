@@ -11,9 +11,9 @@ mod api_responses;
 mod encryption;
 use rocket_contrib::templates::Template;
 use crate::routes::{*};
+#[cfg(test)] mod tests;
 
-
-fn main() { 
+pub fn main() { 
     let app_state = app_state::SharedState::default();
     rocket::ignite()
         .manage(app_state)

@@ -8,7 +8,6 @@ extern crate lazy_static;
 
 use rocket::State;
 use rocket::http::RawStr;
-use std::borrow::BorrowMut;
 use rocket_contrib::json::Json;
 use crate::app_state::{SharedState, KvsError, FORWARDING_ERROR, JSON_DECODING_ERROR};
 use crate::api_responses::{*};
@@ -33,7 +32,7 @@ pub fn add_address(view_change:Json<ViewChange>, shared_state: State<SharedState
     }
     let i = app_state.length;
     let address = &view_change.view;
-    app_state.borrow_mut().build_ip(address.to_string(), i);
+    app_state.build_ip(address.to_string(), i);
     app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
     app_state.repl_factor = view_change.repl_factor;
     let url = format!("{}/kvs/view-change", app_state.random_address());
@@ -55,7 +54,7 @@ pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState
     let view_iter = view_change.view.split(",");
     app_state.length = 0;
     for (i,address) in view_iter.enumerate() {
-        app_state.borrow_mut().build_ip(address.to_string(), i);
+        app_state.build_ip(address.to_string(), i);
         let ip_address = app_state.view[i];
         app_state.build_ring(ip_address.to_string(), i);
     }
