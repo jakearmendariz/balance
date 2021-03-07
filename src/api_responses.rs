@@ -1,3 +1,8 @@
+// api_responses.rs
+
+// Jake Armendariz
+// structures for the responses from kvs
+
 use serde::{ Serialize, Deserialize };
 
 #[derive(Deserialize, Debug, Serialize)]
@@ -39,8 +44,14 @@ pub struct ViewChange {
     pub repl_factor: u8
 }
 
-#[derive(Deserialize, Debug, Serialize)]
+#[derive(Deserialize, Debug, Serialize, Default)]
 pub struct ViewChangeResult {
     message: String,
     shards: Vec<String>
+}
+
+#[derive(Deserialize, Debug, Serialize, Default)]
+pub struct BaseResponse {
+    pub successful:bool,
+    pub message:String,
 }

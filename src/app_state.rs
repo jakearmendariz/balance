@@ -1,3 +1,7 @@
+// app_state.rs
+
+// Jake Armendariz
+// controls the state, encryption and decryption
 extern crate crypto;
 use rocket::http::RawStr;
 use rand::Rng;
@@ -6,19 +10,7 @@ use std::sync::RwLock;
 use openssl::sha::sha1;
 use std::fmt;
 use serde::{ Serialize, Deserialize };
-use openssl::rsa::{Rsa, Padding};
-extern crate base64;
-use base64::{encode, decode};
-extern crate lazy_static;
 
-lazy_static::lazy_static! {
-    static ref PRIVATE_KEY:String = std::fs::read_to_string("private.key")
-        .expect("Couldn't read private.key");
-}
-lazy_static::lazy_static! {
-    static ref PUBLIC_KEY:String = std::fs::read_to_string("public.key")
-        .expect("Couldn't read public.key");
-}
 
 #[derive(Default)]
 pub struct SharedState {
@@ -112,6 +104,14 @@ impl AppState {
         self.view[i] = ip_address;   
     }
 
+    pub fn view_as_str(self) -> String {
+        let mut view:String = String::default();
+        for address in self.view.iter() {
+            view += &address.to_string()
+        }
+        return view;
+    }
+
     pub fn build_ring(&mut self, address:String, i:usize) {
         let mut index = i*64;
         // Copies the address into bytes, and then into the hashed_address array
@@ -166,25 +166,5 @@ impl AppState {
         }
         eprintln!("Error: could not find address for key l:{}, r:{}", l, r);
         Err(KvsError(ADDRESS_MAPPING_ERROR.to_string()))
-    }
-
-    pub fn encrypt(self, data:String) -> String {
-        // Encrypt with public key
-        let rsa = Rsa::public_key_from_pem(PUBLIC_KEY.as_bytes()).unwrap();
-        let mut buf: Vec<u8> = vec![0; rsa.size() as usize];
-        let _ = rsa.public_encrypt(data.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
-        encode(&buf)
-    }
-
-    pub fn decrypt(self, data:String) -> String {
-        let passphrase = std::env::var("PASSPHRASE").unwrap();
-        // Decrypt with private key
-        let hash = decode(data).unwrap();
-        let rsa = Rsa::private_key_from_pem_passphrase(PRIVATE_KEY.as_bytes(), passphrase.as_bytes()).unwrap();
-        let mut buf: Vec<u8> = vec![0; rsa.size() as usize];
-        let _ = rsa.private_decrypt(&hash, &mut buf, Padding::PKCS1).unwrap();
-
-        let decrypted_str = String::from_utf8(buf).unwrap();
-        decrypted_str.chars().filter(|c| c.is_alphanumeric()).collect::<String>()
     }
 }
