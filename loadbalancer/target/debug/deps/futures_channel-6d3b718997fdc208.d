@@ -1,0 +1,9 @@
+/Users/jakearmendariz/Desktop/Programming/rust/loadbalance/target/debug/deps/futures_channel-6d3b718997fdc208.rmeta: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/lock.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/mpsc/mod.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/mpsc/queue.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/oneshot.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/loadbalance/target/debug/deps/futures_channel-6d3b718997fdc208.d: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/lock.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/mpsc/mod.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/mpsc/queue.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/oneshot.rs
+
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/lib.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/lock.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/mpsc/mod.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/mpsc/queue.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-channel-0.3.12/src/oneshot.rs:

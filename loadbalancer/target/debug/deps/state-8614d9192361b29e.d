@@ -1,0 +1,11 @@
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/state-8614d9192361b29e.rmeta: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/ident_hash.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/container.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/storage.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/init.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/libstate-8614d9192361b29e.rlib: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/ident_hash.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/container.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/storage.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/init.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/state-8614d9192361b29e.d: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/ident_hash.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/container.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/storage.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/init.rs
+
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/lib.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/ident_hash.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/container.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/storage.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/state-0.4.2/src/init.rs:

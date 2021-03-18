@@ -1,0 +1,10 @@
+/Users/jakearmendariz/Desktop/Programming/rust/loadbalance/target/debug/deps/notify-faa512fdb0bd73ad.rmeta: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/fsevent.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/null.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/poll.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/debounce/mod.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/debounce/timer.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/loadbalance/target/debug/deps/notify-faa512fdb0bd73ad.d: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/fsevent.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/null.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/poll.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/debounce/mod.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/debounce/timer.rs
+
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/lib.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/fsevent.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/null.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/poll.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/debounce/mod.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/notify-4.0.15/src/debounce/timer.rs:

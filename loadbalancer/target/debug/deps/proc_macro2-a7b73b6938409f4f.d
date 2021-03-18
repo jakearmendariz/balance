@@ -1,0 +1,10 @@
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/proc_macro2-a7b73b6938409f4f.rmeta: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/strnom.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/fallback.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/wrapper.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/libproc_macro2-a7b73b6938409f4f.rlib: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/strnom.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/fallback.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/wrapper.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/proc_macro2-a7b73b6938409f4f.d: /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/lib.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/strnom.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/fallback.rs /Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/wrapper.rs
+
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/lib.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/strnom.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/fallback.rs:
+/Users/jakearmendariz/.cargo/registry/src/github.com-1ecc6299db9ec823/proc-macro2-0.4.30/src/wrapper.rs:

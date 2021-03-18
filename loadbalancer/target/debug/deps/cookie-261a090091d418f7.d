@@ -1,0 +1,12 @@
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/cookie-261a090091d418f7.rmeta: /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/lib.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/builder.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/parse.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/jar.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/delta.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/draft.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/libcookie-261a090091d418f7.rlib: /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/lib.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/builder.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/parse.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/jar.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/delta.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/draft.rs
+
+/Users/jakearmendariz/Desktop/Programming/rust/nightly/nightly/target/debug/deps/cookie-261a090091d418f7.d: /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/lib.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/builder.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/parse.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/jar.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/delta.rs /Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/draft.rs
+
+/Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/lib.rs:
+/Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/builder.rs:
+/Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/parse.rs:
+/Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/jar.rs:
+/Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/delta.rs:
+/Users/jakearmendariz/.cargo/git/checkouts/cookie-rs-9c795d75da5c954b/1c3ca83/src/draft.rs:

@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/jakearmendariz/Desktop/Programming/rust/loadbalance/target/debug/build/typenum-9f59c8133dea1737/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/Users/jakearmendariz/Desktop/Programming/rust/loadbalance/target/debug/build/typenum-9f59c8133dea1737/out/op.rs
