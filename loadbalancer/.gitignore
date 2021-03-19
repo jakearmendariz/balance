@@ -3,3 +3,5 @@
 private.key
 public.key
 Cargo.lock
+passphrase.txt
+.env

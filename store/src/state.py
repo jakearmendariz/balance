@@ -41,6 +41,10 @@ class State():
         self.local_view = [address for address in self.view if self.shard_map[address] == self.shard_id]
         self.replicas = [address for address in self.local_view if address != self.address]
 
+        with open('access_tokens.json') as f:
+            tokens = json.load(f)
+        self.access_tokens = tokens
+
         self.vector_clock = {address:0 for address in self.local_view}
         self.logical = 0
         # ask other nodes in shard for their values upon startup

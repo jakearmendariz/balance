@@ -10,6 +10,7 @@ import requests
 from state import State
 import logging
 from static import Request, Http_Error, Entry
+from constants import *
 
 global state
 @app.before_first_request
@@ -24,12 +25,24 @@ def get_causal_context(request):
     if len(causal_context) == 0 or causal_context['view'] != state.view or causal_context['repl_factor'] != state.repl_factor: 
         causal_context = state.new_causal_context()
     return causal_context
+
+def privlege(request):
+    body = request.get_json()
+    if body == None: return 0
+    access = body.get('access_token')
+    if access in state.access_tokens['users']:
+        return USER_PRIVLEGE
+    elif access == state.access_tokens['servers']:
+        return SERVER_PRIVLEGE
+    return 0 # no privelege
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 key value store
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 @app.route('/kvs/keys/<key>', methods=['GET'])
 def get(key):
     if state.address not in state.view: return json.dumps({"error":"Unable to satisfy request", "message":"Error in GET"}), 503
+    if privlege(request) < USER_PRIVLEGE: return json.dumps({"error":"Unauthorized access", "message":"Not on authenticated user or server list"}), 401
     address = state.maps_to(key)
     shard_id = state.shard_map[address]
     causal_context = get_causal_context(request)
@@ -53,6 +66,7 @@ def get(key):
 
 @app.route('/kvs/keys/<key>', methods=['PUT'])
 def put(key):
+    if privlege(request) < USER_PRIVLEGE: return json.dumps({"error":"Unauthorized access", "message":"Not on authenticated user or server list", "replaced":False}), 401
     data = request.get_json()
     causal_context = get_causal_context(request)
     address = state.maps_to(key)
@@ -81,6 +95,7 @@ def put(key):
 
 @app.route('/kvs/keys/<key>', methods=['DELETE'])
 def delete(key):
+    if privlege(request) < USER_PRIVLEGE: return json.dumps({"error":"Unauthorized access", "message":"Not on authenticated user or server list"}), 401
     address = state.maps_to(key)
     shard_id = state.shard_map[address]  
     # get causal context, if empty, initalize

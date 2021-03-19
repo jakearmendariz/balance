@@ -2,9 +2,14 @@
  
 // Jake Armendariz
 // Routes for forwarding requests to distributed kvs
+extern crate dotenv_codegen;
 extern crate crypto;
 extern crate reqwest;
 extern crate lazy_static;
+
+extern crate dotenv;
+
+use dotenv::dotenv;
 
 use rocket::State;
 use rocket::http::RawStr;
@@ -13,6 +18,7 @@ use crate::app_state::{SharedState, KvsError, FORWARDING_ERROR, JSON_DECODING_ER
 use crate::api_responses::{*};
 use crate::encryption::{*};
 use rocket_contrib::templates::Template;
+
 
 lazy_static::lazy_static! {
     static ref CLIENT:reqwest::blocking::Client = reqwest::blocking::Client::new();
@@ -36,11 +42,13 @@ pub fn add_address(view_change:Json<ViewChange>, shared_state: State<SharedState
     app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
     app_state.repl_factor = view_change.repl_factor;
     let url = format!("{}/kvs/view-change", app_state.random_address());
+    let body = &serde_json::json!({
+        "view":view_change.view,
+        "repl-factor":view_change.repl_factor,
+        "access_token":dotenv!("ACCESS_TOKEN")
+    });
     let response = match CLIENT.put(&url[..])
-        .json(&serde_json::json!({
-            "view":app_state.view_as_str(),
-            "repl-factor":app_state.repl_factor
-        })).send() {
+        .json(body).send() {
             Ok(_) => Ok(Json(BaseResponse {message: "View change successful".to_string(), successful: true})),
             Err(_) => Err(KvsError(FORWARDING_ERROR.to_string()))
         };
@@ -60,11 +68,13 @@ pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState
     }
     app_state.ring.sort_by(|a, b| a.hash.cmp(&b.hash));
     let url = format!("{}/kvs/view-change", app_state.random_address());
+    let body = &serde_json::json!({
+        "view":view_change.view,
+        "repl-factor":view_change.repl_factor,
+        "access_token":dotenv!("ACCESS_TOKEN")
+    });
     let response = match CLIENT.put(&url[..])
-        .json(&serde_json::json!({
-            "view":view_change.view,
-            "repl-factor":view_change.repl_factor
-        })).send() {
+        .json(body).send() {
             Ok(response) => Ok(Json(response.json().unwrap())),
             Err(_) => Err(KvsError(FORWARDING_ERROR.to_string()))
         };
@@ -75,11 +85,12 @@ pub fn view_change(view_change:Json<ViewChange>, shared_state: State<SharedState
 pub fn put_kvs(key: &RawStr, kvs:Json<GetSuccess>, shared_state: State<SharedState>) -> Result<Json<PutResult>, KvsError> {
     let state = shared_state.state.read().expect("lock shared data");
     let url = format!("{}/kvs/keys/{}", state.choose_address(key)?, key);
-    let value = &kvs.value;
+    let body = &serde_json::json!({
+        "value":encrypt(kvs.value.to_string()),
+        "access_token":dotenv!("ACCESS_TOKEN")
+    });
     let response = match CLIENT.put(&url[..])
-        .json(&serde_json::json!({
-            "value":encrypt(value.to_string())
-        })).send() {
+        .json(body).send() {
             Ok(response) => Ok(Json(response.json().unwrap())),
             Err(_) => Err(KvsError(FORWARDING_ERROR.to_string()))
         };
@@ -90,7 +101,10 @@ pub fn put_kvs(key: &RawStr, kvs:Json<GetSuccess>, shared_state: State<SharedSta
 pub fn get_kvs(key: &RawStr, shared_state: State<SharedState>) -> Result<Json<GetResult>, KvsError> {
     let state = shared_state.state.read().expect("lock shared data");
     let url = format!("{}/kvs/keys/{}", state.choose_address(key)?, key);
-    let response = match CLIENT.get(&url[..]).send() {
+    let body = &serde_json::json!({
+        "access_token":dotenv!("ACCESS_TOKEN")
+    });
+    let response = match CLIENT.get(&url[..]).json(body).send() {
         Ok(response) => {
             if response.status().is_success() {
                 match response.json::<GetSuccess>() {

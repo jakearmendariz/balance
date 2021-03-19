@@ -2,6 +2,9 @@ extern crate lazy_static;
 extern crate base64;
 use openssl::rsa::{Rsa, Padding};
 use base64::{encode, decode};
+extern crate dotenv;
+
+use dotenv::dotenv;
 
 lazy_static::lazy_static! {
     static ref PRIVATE_KEY:String = std::fs::read_to_string("private.key")
@@ -21,7 +24,7 @@ pub fn encrypt(data:String) -> String {
 }
 
 pub fn decrypt(data:String) -> String {
-    let passphrase = std::env::var("PASSPHRASE").unwrap();
+    let passphrase = dotenv!("PASSPHRASE");
     // Decrypt with private key
     let hash = decode(data).unwrap();
     let rsa = Rsa::private_key_from_pem_passphrase(PRIVATE_KEY.as_bytes(), passphrase.as_bytes()).unwrap();

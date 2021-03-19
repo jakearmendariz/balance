@@ -11,6 +11,7 @@ from app import app
 import requests
 import constants
 import time
+import json
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Entry
@@ -104,39 +105,45 @@ Request
 
 Contains a series of functions to make requests allowing for errors of the server being down
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+with open('access_tokens.json') as f:
+    server_token = json.load(f)['servers']
+
+def build_request_body(value='', causal_context={}, entry={}):
+    return {'value':value, 'causal-context':causal_context, 'access_token':server_token, 'entry':entry}
+
 class Request():
     @staticmethod
     def send_get(address, key,causal_context):
         response = None
-        try: response = requests.get(f'http://{address}/kvs/{key}', json = {'causal-context':causal_context}, timeout=2)
+        try: response = requests.get(f'http://{address}/kvs/{key}', json = build_request_body(causal_context=causal_context), timeout=2)
         except: response = Http_Error(500)
         finally: return response
     
     @staticmethod
     def send_put(address, key, value, causal_context={}):
         response = None
-        try: response = requests.put(f'http://{address}/kvs/keys/{key}', json = {'value':value, 'causal-context':causal_context}, timeout=2, headers = {"Content-Type": "application/json"})
+        try: response = requests.put(f'http://{address}/kvs/keys/{key}', json = build_request_body(value, causal_context), timeout=2, headers = {"Content-Type": "application/json"})
         except: response = Http_Error(500)
         finally: return response
     
     @staticmethod
     def send_delete(address, key, causal_context={}):
         response = None
-        try: response = requests.delete(f'http://{address}/kvs/keys/{key}', json = {'causal-context':causal_context}, timeout=2)
+        try: response = requests.delete(f'http://{address}/kvs/keys/{key}', json = build_request_body(causal_context=causal_context), timeout=2)
         except: response = Http_Error(500)
         finally: return response
 
     @staticmethod
     def send_delete_endpoint(address, key, entry, causal_context={}):
         response = None
-        try: response = requests.delete(f'http://{address}/kvs/{key}',json = {'causal-context':causal_context, 'entry':entry}, timeout=2)
+        try: response = requests.delete(f'http://{address}/kvs/{key}',json = build_request_body(causal_context=causal_context, entry=entry), timeout=2)
         except: response = Http_Error(500)
         finally: return response
     
     @staticmethod
     def send_put_endpoint(address, key, entry, causal_context={}):
         response = None
-        try: response = requests.put(f'http://{address}/kvs/{key}', json = {'entry':entry,'causal-context':causal_context}, timeout=2, headers = {"Content-Type": "application/json"})
+        try: response = requests.put(f'http://{address}/kvs/{key}', json = build_request_body(causal_context=causal_context, entry=entry), timeout=2, headers = {"Content-Type": "application/json"})
         except: response = Http_Error(500)
         finally: return response
     
@@ -158,28 +165,28 @@ class Request():
     @staticmethod
     def send_node_change(address, view, repl_factor):
         response = None
-        try: response = requests.put(f'http://{address}/kvs/node-change', json = {"view":view, 'repl-factor':repl_factor}, timeout=6, headers = {"Content-Type": "application/json"})
+        try: response = requests.put(f'http://{address}/kvs/node-change', json = {"view":view, 'repl-factor':repl_factor, 'access_token':server_token}, timeout=6, headers = {"Content-Type": "application/json"})
         except: response = Http_Error(500)
         finally: return response
 
     @staticmethod
     def send_key_migration(address, view):
         response = None
-        try: response = requests.put(f'http://{address}/kvs/key-migration', json = {"view":view}, timeout=4, headers = {"Content-Type": "application/json"})
+        try: response = requests.put(f'http://{address}/kvs/key-migration', json = {"view":view, 'access_token':server_token}, timeout=4, headers = {"Content-Type": "application/json"})
         except: response = Http_Error(500)
         finally: return response
 
     @staticmethod
     def put_store(address, store, _type):
         response = None
-        try: response = requests.put(f'http://{address}/kvs/view-change/store', json = {"type":_type, "store":store}, timeout=3, headers = {"Content-Type": "application/json"})
+        try: response = requests.put(f'http://{address}/kvs/view-change/store', json = {"type":_type, "store":store, 'access_token':server_token}, timeout=3, headers = {"Content-Type": "application/json"})
         except: response = Http_Error(500)
         finally: return response
 
     @staticmethod
     def delete_store(address, store, _type):
         response = None
-        try: response = requests.delete(f'http://{address}/kvs/view-change/store', json = {"type":_type, "store":store}, timeout=3, headers = {"Content-Type": "application/json"})
+        try: response = requests.delete(f'http://{address}/kvs/view-change/store', json = {"type":_type, "store":store, 'access_token':server_token}, timeout=3, headers = {"Content-Type": "application/json"})
         except: response = Http_Error(500)
         finally: return response
 

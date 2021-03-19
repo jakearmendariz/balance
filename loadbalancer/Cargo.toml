@@ -19,3 +19,5 @@ sha-1 = "0.9.3"
 openssl = { version = "0.10", features = ["vendored"] }
 base64 = "0.13.0"
 lazy_static = "1.4.0"
+dotenv_codegen = "0.15.0"
+dotenv = "0.15.0"
