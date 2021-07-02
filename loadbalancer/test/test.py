@@ -24,6 +24,10 @@ class load_balancer(unittest.TestCase):
         print(response.status_code)
         self.assertIn(response.status_code, (200, 201))
         print(response.json())
+               
+        response = requests.get(f'{url}/kvs/keys/ass')
+        self.assertIn(response.status_code, (200, 201))
+        print(response.json())
 
 # requests.delete('http://localhost:8000/kvs/jake', json={'value':'sawg'})
 if __name__ == '__main__':

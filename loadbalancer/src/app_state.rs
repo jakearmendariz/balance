@@ -22,7 +22,8 @@ pub struct AppState {
     pub repl_factor:u8,
     pub view:[IPAddress; 8],
     pub length:usize,
-    pub ring:[VirtualNode; 512]
+    pub ring:[VirtualNode; 512],
+    pub encrypt:bool,
 }
 
 #[derive(Debug, Copy, Clone, Default)]
@@ -39,7 +40,8 @@ pub struct VirtualNode {
 
 impl IPAddress {
     pub fn to_string(self) -> String{
-        return format!("{}.{}.{}.{}:{}", self.ip[0], self.ip[1], self.ip[2], self.ip[3], self.port);
+        //return format!("{}.{}.{}.{}:{}", self.ip[0], self.ip[1], self.ip[2], self.ip[3], self.port);
+        return format!("localhost:{}", self.port);
     }
 }
 
@@ -62,14 +64,16 @@ impl fmt::Display for KvsError {
 
 impl Default for AppState {
     fn default() -> Self {
-        let repl_factor = std::env::var("REPL_FACTOR")
-            .unwrap().parse::<u8>().unwrap();
-        let view_env = std::env::var("VIEW").unwrap();
+        let repl_factor =  dotenv!("REPL_FACTOR")//;std::env::var("REPL_FACTOR")
+            .parse::<u8>().unwrap();
+        let view_env = dotenv!("NEWVIEW");//std::env::var("VIEW").unwrap();
+        println!("VIEW: {}", view_env);
         let mut app_state = AppState {
             repl_factor: repl_factor,
             view: [IPAddress::default(); 8],
             length:0,
             ring:[VirtualNode::default(); 512],
+            encrypt:false, // CHANGE TO A MACRO OR CONIFGURABLE CONSTANT
         };
         let view_iter = view_env.split(',');
         for (i,address) in view_iter.enumerate() {

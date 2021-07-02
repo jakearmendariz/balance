@@ -4,11 +4,23 @@
 // structures for the responses from kvs
 
 use serde::{ Serialize, Deserialize };
+use std::fmt;
+
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct GetSuccess {
     pub value: String
 }
+
+// #[derive(Debug, Responder)]
+// enum Error {
+//     #[response(status = 400)]
+//     BadRequest('static str),
+//     #[response(status = 404)]
+//     NotFound('static str),
+//     #[response(status = 400)]
+//     InternalServer('static str)
+// }
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct GetError {
@@ -18,7 +30,7 @@ pub struct GetError {
 #[derive(Deserialize, Debug, Serialize)]
 pub enum GetResult {
     Successful(GetSuccess),
-    Unsuccessful(GetError)
+    Unsuccessful(GetError),
 }
 
 #[derive(Deserialize, Debug, Serialize)]
@@ -26,10 +38,29 @@ pub struct KeyCount {
     pub key_count: u8
 }
 
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+      write!(f, "error:{}, message: {}", self.error, self.message)
+    }
+}
+
 #[derive(Deserialize, Debug, Serialize)]
-pub struct PutResult {
+pub struct Error {
+    pub error: String,
+    pub message: String
+}
+
+#[derive(Deserialize, Debug, Serialize)]
+pub struct PutSuccess {
     pub message: String,
     replaced: bool
+}
+
+#[derive(Deserialize, Debug, Serialize)]
+pub enum PutResult {
+    Successful(PutSuccess),
+    Unsuccessful(Error),
+    String(String)
 }
 
 #[derive(Deserialize, Debug, Serialize)]

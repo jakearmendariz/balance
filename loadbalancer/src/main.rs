@@ -5,6 +5,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate dotenv_codegen;
+extern crate dotenv;
 extern crate crypto;
 mod app_state;
 mod routes;
